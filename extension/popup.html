@@ -1,0 +1,25 @@
+<!doctype html>
+<!-- OWNER: Lane 2 (Extension UI) -->
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Site Vetter</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <header><span class="logo">◆</span> Site Vetter</header>
+  <button id="vet">Is this site safe?</button>
+  <div id="status" class="muted"></div>
+  <section id="result" hidden>
+    <div id="verdict"></div>
+    <div id="domain" class="muted"></div>
+    <div id="injection" hidden></div>
+    <ul id="reasons"></ul>
+    <div id="tracking"></div>
+    <h3>What to do</h3>
+    <ol id="advice"></ol>
+    <div id="meta" class="muted"></div>
+  </section>
+  <script src="popup.js"></script>
+</body>
+</html>

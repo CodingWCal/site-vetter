@@ -1,0 +1,17 @@
+{
+  "name": "site-vetter",
+  "version": "0.1.0",
+  "private": true,
+  "description": "One click: is this site safe? Browser extension + local Claude backend. Claude Build Day Boston, security track.",
+  "type": "module",
+  "engines": { "node": ">=18" },
+  "scripts": {
+    "setup": "node scripts/setup.js",
+    "start": "node server/server.js",
+    "mock": "node server/server.js --mock",
+    "check": "node scripts/smoke.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0"
+  }
+}

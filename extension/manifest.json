@@ -1,0 +1,9 @@
+{
+  "manifest_version": 3,
+  "name": "Site Vetter",
+  "version": "0.1.0",
+  "description": "One click: is this site safe? Domain age, phishing signs, trackers, and a plain-English verdict from Claude.",
+  "action": { "default_popup": "popup.html", "default_title": "Is this site safe?" },
+  "permissions": ["activeTab", "scripting"],
+  "host_permissions": ["http://localhost:8787/*"]
+}

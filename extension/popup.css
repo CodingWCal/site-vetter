@@ -1,0 +1,23 @@
+/* OWNER: Lane 2 (Extension UI) */
+:root { --bg: #0d1117; --panel: #161b22; --line: #30363d; --text: #e6edf3; --muted: #8b949e;
+  --accent: #d97757; --danger: #f85149; --caution: #d29922; --safe: #3fb950; }
+body { width: 380px; margin: 0; padding: 14px; background: var(--bg); color: var(--text); font: 13px/1.45 system-ui, sans-serif; }
+header { font-weight: 700; font-size: 16px; margin-bottom: 10px; }
+.logo { color: var(--accent); }
+button#vet { width: 100%; padding: 10px; border: 0; border-radius: 8px; background: var(--accent); color: #fff; font: 600 14px system-ui; cursor: pointer; }
+button#vet:disabled { opacity: .6; cursor: wait; }
+.muted { color: var(--muted); font-size: 12px; margin-top: 8px; }
+.error { color: var(--danger); }
+#verdict { margin-top: 12px; padding: 12px; border-radius: 8px; background: var(--panel); border-left: 5px solid var(--v); }
+#verdict .badge { font-weight: 800; letter-spacing: 1px; text-transform: uppercase; color: var(--v); }
+#verdict .score { float: right; font-weight: 700; color: var(--v); }
+#verdict .headline { font-size: 15px; font-weight: 600; margin-top: 4px; }
+.v-danger { --v: var(--danger); } .v-caution { --v: var(--caution); } .v-safe { --v: var(--safe); }
+#injection { margin-top: 10px; padding: 8px 10px; border: 1px solid var(--danger); border-radius: 8px; background: #2a1215; font-size: 12px; }
+#injection q { display: block; margin-top: 4px; font-style: italic; word-break: break-word; }
+ul#reasons { list-style: none; padding: 0; margin: 12px 0 0; }
+ul#reasons li { padding: 6px 0; border-bottom: 1px solid var(--line); }
+ul#reasons .label { font-weight: 600; }
+#tracking { margin-top: 10px; padding: 8px 10px; background: var(--panel); border-radius: 8px; }
+h3 { font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin: 14px 0 4px; }
+ol#advice { padding-left: 18px; margin: 0; }

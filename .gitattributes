@@ -1,0 +1,4 @@
+# Normalize line endings so Mac and Windows diffs stay clean
+* text=auto eol=lf
+*.png binary
+*.ico binary
