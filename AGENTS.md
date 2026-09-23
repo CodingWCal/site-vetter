@@ -7,7 +7,7 @@ Claude Build Day Boston, security track. **Lightning demo at 8:00 PM.** Read `do
 | Lane | Owner (claim in WhatsApp) | Files you may edit |
 |---|---|---|
 | 1 Captain / backend | Calvin @CodingWCal | `server/server.js`, `server/domain-age.js`, `server/redact.js`, `package.json`, `scripts/`, `docs/`, `AGENTS.md`, `README.md` |
-| 2 Popup UI | ______ | `extension/popup.html`, `extension/popup.css`, `extension/popup.js`, `extension/manifest.json` |
+| 2 Popup UI | Rachel @Rachelgonsalves821 | `extension/popup.html`, `extension/popup.css`, `extension/popup.js`, `extension/manifest.json` |
 | 3 Page signals | ______ | `extension/content.js` |
 | 4 AI analyst + plain language | Kerline @TikeDev | `server/prompt.md`, `server/schema.js`, `server/mock-response.json` |
 | 5 Test pages + QA | Siddharth @t-siddharth | `test-pages/` |

@@ -31,7 +31,7 @@ because 7 people editing one file is the merge conflict you're trying to avoid.
 | Person | GitHub | Lane | Authored | Other contributions |
 |---|---|---|---|---|
 | Calvin | @CodingWCal | 1 Captain/backend | scaffold, backend, docs | coordination |
-| | @Rachelgonsalves821 | | | |
+| Rachel | @Rachelgonsalves821 | 2 Popup UI | | |
 | | @17-jd | | | |
 | | @hap4114 | | | |
 | Kerline | @TikeDev | 4 AI analyst + plain language | | |
