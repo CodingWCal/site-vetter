@@ -35,5 +35,5 @@ because 7 people editing one file is the merge conflict you're trying to avoid.
 | | @17-jd | | | |
 | | @hap4114 | | | |
 | | @TikeDev | | | |
-| | @t-siddharth | | | |
+| Siddharth | @t-siddharth | 5 Test pages + QA | | |
 | | @bmiao10 | | | |
