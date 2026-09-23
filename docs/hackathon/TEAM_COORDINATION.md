@@ -34,6 +34,6 @@ because 7 people editing one file is the merge conflict you're trying to avoid.
 | | @Rachelgonsalves821 | | | |
 | | @17-jd | | | |
 | | @hap4114 | | | |
-| | @TikeDev | | | |
+| Kerline | @TikeDev | 4 AI analyst + plain language | | |
 | Siddharth | @t-siddharth | 5 Test pages + QA | | |
 | | @bmiao10 | | | |
