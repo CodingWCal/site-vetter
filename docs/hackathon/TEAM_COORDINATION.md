@@ -36,4 +36,4 @@ because 7 people editing one file is the merge conflict you're trying to avoid.
 | Hamini | @hap4114 | 3 Page signals | | |
 | Kerline | @TikeDev | 4 AI analyst + plain language | | |
 | Siddharth | @t-siddharth | 5 Test pages + QA | | |
-| | @bmiao10 | | | |
+| Brenda | @bmiao10 | 6 Pitch + demo | | |

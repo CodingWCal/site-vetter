@@ -11,7 +11,7 @@ Claude Build Day Boston, security track. **Lightning demo at 8:00 PM.** Read `do
 | 3 Page signals | Hamini @hap4114 | `extension/content.js` |
 | 4 AI analyst + plain language | Kerline @TikeDev | `server/prompt.md`, `server/schema.js`, `server/mock-response.json` |
 | 5 Test pages + QA | Siddharth @t-siddharth | `test-pages/` |
-| 6 Pitch + demo | ______ | `pitch/` |
+| 6 Pitch + demo | Brenda @bmiao10 | `pitch/` |
 | 7 Threat checks | @17-jd | `server/lookalike.js` |
 
 **Contract between lanes:** `server/schema.js` + `server/mock-response.json`. Lane 4 owns them. Any field
