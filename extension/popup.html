@@ -3,23 +3,44 @@
 <html lang="en">
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Site Vetter</title>
   <link rel="stylesheet" href="popup.css">
 </head>
 <body>
-  <header><span class="logo">◆</span> Site Vetter</header>
-  <button id="vet">Is this site safe?</button>
-  <div id="status" class="muted"></div>
-  <section id="result" hidden>
-    <div id="verdict"></div>
-    <div id="domain" class="muted"></div>
-    <div id="injection" hidden></div>
-    <ul id="reasons"></ul>
-    <div id="tracking"></div>
-    <h3>What to do</h3>
-    <ol id="advice"></ol>
-    <div id="meta" class="muted"></div>
-  </section>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <span class="brand-mark" aria-hidden="true"><span>✦</span></span>
+        <div><div class="eyebrow">TRUST LAYER <span class="live-dot"></span></div><div class="brand-name">Site Vetter</div></div>
+      </div>
+      <span class="version">LOCAL SCAN</span>
+    </header>
+    <section class="intro" aria-labelledby="intro-title">
+      <div class="intro-kicker"><span class="signal-line"></span> Make the invisible visible</div>
+      <h1 id="intro-title">Is this site<br><em>safe to trust?</em></h1>
+      <p>We’ll check the page, its links, and where its forms really go.</p>
+    </section>
+    <button id="vet" class="scan-button" type="button">
+      <span class="scan-icon" aria-hidden="true">⌁</span>
+      <span class="scan-copy"><strong>Run a safety check</strong><small>Usually takes about 10 seconds</small></span>
+      <span class="button-arrow" aria-hidden="true">→</span>
+    </button>
+    <div id="status" class="status" role="status" aria-live="polite"></div>
+    <section id="result" class="result" hidden aria-live="polite">
+      <div id="verdict" class="verdict-card">
+        <div class="verdict-topline"><span class="verdict-eyebrow">SCAN COMPLETE</span><span class="verdict-pulse"></span></div>
+        <div class="verdict-main"><div class="score-ring"><span id="score">—</span><small>/100</small></div><div class="verdict-copy"><span id="verdict-badge" class="badge">—</span><strong id="headline" class="headline"></strong></div></div>
+      </div>
+      <div class="domain-row"><span class="domain-icon" aria-hidden="true">◎</span><span id="domain" class="domain-copy"></span></div>
+      <div id="injection" class="injection" hidden></div>
+      <div class="section-heading"><span>What we found</span><span class="section-rule"></span></div>
+      <ul id="reasons" class="reasons"></ul>
+      <div id="tracking" class="tracking"></div>
+      <div class="advice-card"><div class="advice-heading"><span class="advice-icon" aria-hidden="true">↗</span><span>What to do next</span></div><ol id="advice" class="advice"></ol></div>
+      <div id="meta" class="meta"></div>
+    </section>
+  </main>
   <script src="popup.js"></script>
 </body>
 </html>
