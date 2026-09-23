@@ -32,7 +32,7 @@ because 7 people editing one file is the merge conflict you're trying to avoid.
 |---|---|---|---|---|
 | Calvin | @CodingWCal | 1 Captain/backend | scaffold, backend, docs | coordination |
 | Rachel | @Rachelgonsalves821 | 2 Popup UI | | |
-| | @17-jd | | | |
+| | @17-jd | 7 Threat checks (lookalike domains) | | |
 | Hamini | @hap4114 | 3 Page signals | | |
 | Kerline | @TikeDev | 4 AI analyst + plain language | | |
 | Siddharth | @t-siddharth | 5 Test pages + QA | | |

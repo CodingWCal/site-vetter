@@ -12,7 +12,7 @@ Claude Build Day Boston, security track. **Lightning demo at 8:00 PM.** Read `do
 | 4 AI analyst + plain language | Kerline @TikeDev | `server/prompt.md`, `server/schema.js`, `server/mock-response.json` |
 | 5 Test pages + QA | Siddharth @t-siddharth | `test-pages/` |
 | 6 Pitch + demo | ______ | `pitch/` |
-| 7 Threat checks | ______ | `server/lookalike.js` |
+| 7 Threat checks | @17-jd | `server/lookalike.js` |
 
 **Contract between lanes:** `server/schema.js` + `server/mock-response.json`. Lane 4 owns them. Any field
 rename must be announced to Lane 2 first and land in one commit that updates both files.
