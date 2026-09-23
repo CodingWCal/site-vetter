@@ -4,15 +4,15 @@ Claude Build Day Boston, security track. **Lightning demo at 8:00 PM.** Read `do
 
 ## Lanes: edit ONLY your lane's files
 
-| Lane | Owner | Files you may edit |
+| Lane | Owner (claim in WhatsApp) | Files you may edit |
 |---|---|---|
-| 1 Captain / backend | Calvin (@CodingWCal) | `server/server.js`, `server/domain-age.js`, `server/redact.js`, `package.json`, `scripts/`, `docs/`, `AGENTS.md`, `README.md` |
+| 1 Captain / backend | Calvin @CodingWCal | `server/server.js`, `server/domain-age.js`, `server/redact.js`, `package.json`, `scripts/`, `docs/`, `AGENTS.md`, `README.md` |
 | 2 Popup UI | ______ | `extension/popup.html`, `extension/popup.css`, `extension/popup.js`, `extension/manifest.json` |
 | 3 Page signals | ______ | `extension/content.js` |
 | 4 AI analyst | ______ | `server/prompt.md`, `server/schema.js`, `server/mock-response.json` |
-| 5 Test pages + pitch + QA | ______ | `test-pages/`, `pitch/` |
-
-Fewer people? Calvin takes Lane 4, and Lane 5 does pitch + QA only.
+| 5 Test pages + QA | ______ | `test-pages/` |
+| 6 Pitch + demo | ______ | `pitch/` |
+| 7 Threat checks | ______ | `server/lookalike.js` |
 
 **Contract between lanes:** `server/schema.js` + `server/mock-response.json`. Lane 4 owns them. Any field
 rename must be announced to Lane 2 first and land in one commit that updates both files.
@@ -29,6 +29,15 @@ rename must be announced to Lane 2 first and land in one commit that updates bot
 - Stop and ask your human if you need a file outside your lane, a new npm dependency, or a schema change.
 - **7:35 PM scope freeze.** After that, only fixes for things that break the demo.
 <!-- HACKATHON-TEAM-COORDINATOR END -->
+
+## How lanes (and their agents) coordinate
+
+- Agents don't talk to each other. They coordinate through **files on `main`** and humans relay in **WhatsApp**.
+- Contract files are the shared interface: `server/schema.js` + `server/mock-response.json` (report shape) and
+  the object `extension/content.js` returns (signals shape). Build against what's on `main`, not a guess.
+- Need something from another lane? Don't have your agent edit their file. Post a `REQUEST` in WhatsApp;
+  the owner prompts their own agent. When it lands, sync: `git fetch origin` then `git merge origin/main`.
+- This file changes only via Calvin. Don't edit it in your branch; ask in WhatsApp.
 
 ## Security rules (this is a security project; act like it)
 

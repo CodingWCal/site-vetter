@@ -11,6 +11,18 @@ npm run setup
 npm run mock
 ```
 
+**Kickoff prompt: paste this as the first message to your agent** (swap in your lane number):
+
+```
+I'm on Lane N of a 60-minute hackathon team. Read AGENTS.md, docs/PRD.md, and my
+Lane N packet in docs/hackathon/TASK_PACKETS.md. Only edit the files AGENTS.md
+assigns to Lane N. Build against the contract files on main (server/schema.js,
+server/mock-response.json) and don't change them unless you're Lane 4. Keep
+changes small, run `npm run check` after each one, and stop and tell me if you
+need any other file, a new dependency, or a contract change. Start by telling
+me your plan in 3 bullets.
+```
+
 **Handoff (by 7:35):** push your branch, open a PR, and use the PR template. **Stop and ask** if you need a
 file outside your lane, a new dependency, or a schema change, or if `npm run check` fails for a reason you can't explain.
 
@@ -36,10 +48,23 @@ file outside your lane, a new dependency, or a schema change, or if `npm run che
 - Tune until: phish = danger with the injection quoted, Wikipedia = safe, news site = safe + heavy tracking.
 - **Done when:** 3 runs in a row give the expected verdicts.
 
-## Lane 5: Test pages + pitch + QA (`test-pages/`, `pitch/`)
-**Objective:** The demo lands in under 3 minutes.
-- Optional: a second fake page (a fake package-delivery fee page), a "caution" example.
-- Write `pitch/DEMO.md`: who says what, and the exact clicks.
-- 7:35: QA pass on Calvin's laptop across every page. File issues to the owning lane.
-- 7:45–7:55: rehearse twice with a timer.
+## Lane 5: Test pages + QA (`test-pages/`)
+**Objective:** Evidence the demo runs on, plus proof that it works.
+- Add a second fake page (e.g. a fake "package delivery fee" page) and a "caution" example (legit but sketchy: new domain, no login).
+- Keep `test-pages/README.md` current: each page, the expected verdict, and the signals it should trigger. Lanes 3 and 4 test against it.
+- 7:35: QA pass on Calvin's laptop across every page plus 2 real sites. Post failures as `REQUEST`s to the owning lane.
+- **Done when:** every page has an expected verdict and the QA pass is posted in WhatsApp.
+
+## Lane 6: Pitch + demo (`pitch/`)
+**Objective:** 3 minutes, one idea, landed.
+- Rewrite `pitch/DEMO.md`: the hook, who says what, and the exact clicks. Optional: 1–2 slides.
+- Plan a backup: a second browser window with the result already loaded, plus `npm run mock` if Wi-Fi dies.
+- 7:45–7:55: rehearse twice on the demo laptop with a timer.
 - **Done when:** the run-through takes under 2:45.
+
+## Lane 7: Threat checks (`server/lookalike.js`)
+**Objective:** Catch impersonation that plain page signals miss: `paypa1.com`, `chase.com.verify-login.io`.
+- Implement `lookalikeChecks(host, title)` (stub + TODOs in the file). It's already wired into `server.js`, and its findings go to Claude as `lookalike`.
+- No network calls, no dependencies. A hard-coded list of ~20 commonly phished brands is fine.
+- Test quickly: `node -e "import('./server/lookalike.js').then(m => console.log(m.lookalikeChecks('paypa1-secure.com', 'PayPal Login')))"`
+- **Done when:** 5 lookalike examples get flagged and `wikipedia.org` / `github.com` get none.

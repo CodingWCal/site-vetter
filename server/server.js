@@ -9,6 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { REPORT_SCHEMA } from "./schema.js";
 import { redact } from "./redact.js";
 import { domainAge } from "./domain-age.js";
+import { lookalikeChecks } from "./lookalike.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const root = path.resolve(here, "..");
@@ -41,9 +42,10 @@ async function vet({ url, signals = {}, text = "" }) {
   const host = new URL(url).hostname;
   const started = Date.now();
   const age = await domainAge(host);
+  const lookalike = lookalikeChecks(host, signals.title);
 
   const content = redact(
-    `Vet this page.\n\n<facts>\n${JSON.stringify({ url, domain_age: age, signals }, null, 2)}\n</facts>\n\n` +
+    `Vet this page.\n\n<facts>\n${JSON.stringify({ url, domain_age: age, lookalike, signals }, null, 2)}\n</facts>\n\n` +
     `<page_text>\n${text}\n</page_text>`,
   );
   const meta = { mock: MOCK, model: MOCK ? "mock" : MODEL, domain_age: age,
