@@ -37,6 +37,8 @@ try {
   check("report matches schema fields", REPORT_SCHEMA.required.every((k) => k in data.report));
   check("card number + AWS key redacted before model call", data.meta.redactions.count === 2);
   check("POST from a random website origin -> 403", (await post(sample, { Origin: "https://evil.example" })).status === 403);
+  check("store page mock -> 200 (store mock or fallback)",
+    (await post({ url: "http://localhost:8787/test/store.html" })).status === 200);
   check("non-http url rejected", (await post({ url: "chrome://settings" })).status === 400);
 } finally {
   srv.kill();

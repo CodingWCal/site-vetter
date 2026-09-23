@@ -53,7 +53,10 @@ async function vet({ url, signals = {}, text = "" }) {
 
   if (MOCK) {
     await new Promise((r) => setTimeout(r, 800));
-    const report = JSON.parse(await readFile(path.join(here, "mock-response.json"), "utf8"));
+    // Fake-store demo gets its own canned verdict (Lane 4 file); falls back until it's merged.
+    const storeMock = path.join(here, "mock-response-store.json");
+    const mockFile = /store/i.test(url) && existsSync(storeMock) ? storeMock : path.join(here, "mock-response.json");
+    const report = JSON.parse(await readFile(mockFile, "utf8"));
     return { report, meta: { ...meta, ms: Date.now() - started } };
   }
 
