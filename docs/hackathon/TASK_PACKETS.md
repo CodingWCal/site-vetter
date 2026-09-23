@@ -42,11 +42,20 @@ file outside your lane, a new dependency, or a schema change, or if `npm run che
 - Never read input values. Keep the returned object small (<200 KB).
 - **Done when:** the phish page triggers every signal in `test-pages/README.md`, and Wikipedia triggers none of the red ones.
 
-## Lane 4: AI analyst (`server/prompt.md`, `server/schema.js`, `server/mock-response.json`)
-**Objective:** Correct, calm verdicts that can't be talked out of a finding.
-- Needs a key: put `ANTHROPIC_API_KEY` in `.env`, then run `npm start`. Test with the phish page, Wikipedia, and one news site (heavy trackers, but still safe).
-- Tune until: phish = danger with the injection quoted, Wikipedia = safe, news site = safe + heavy tracking.
-- **Done when:** 3 runs in a row give the expected verdicts.
+## Lane 4: AI analyst + plain language (`server/prompt.md`, `server/schema.js`, `server/mock-response.json`)
+**Objective:** Verdicts that are correct *and* that a non-technical or older person understands on first read.
+Most of the words in the popup (headline, reasons, advice) come from Claude, so this lane owns the product's voice.
+- Needs a key: put `ANTHROPIC_API_KEY` in `.env`, then run `npm start`. (`npm run mock` always shows the same canned text, so you won't see prompt changes there.) Test with the phish page, Wikipedia, and one news site (heavy trackers, but still safe).
+- **Voice rules to build into `prompt.md`:**
+  - Short sentences, everyday words, about a 6th-grade reading level. Calm, not scary.
+  - No jargon: "fake website," not "phishing." "Website address," not "domain." "Companies tracking what you do," not "third-party trackers." "Not encrypted," not "HTTP."
+  - Every reason explains why it matters to *them* ("your card number would go to a stranger").
+  - Always end with one concrete step they can take ("Close this tab. Call your bank using the number on the back of your card.").
+- Use the `description` fields in `schema.js` to steer tone per field (e.g. `headline`: "under 15 words, no jargon").
+- Rewrite `mock-response.json` in the same voice so the mock demo matches.
+- Fixed popup labels ("Dangerous," "Be careful," loading and error text) belong to Lane 2. Send them a `REQUEST` with your wording.
+- Accuracy still wins: phish = danger with the injection quoted, Wikipedia = safe, news site = safe + heavy tracking.
+- **Done when:** 3 runs in a row give the expected verdicts, and someone outside the team reads the phish result aloud without stumbling on a word.
 
 ## Lane 5: Test pages + QA (`test-pages/`)
 **Objective:** Evidence the demo runs on, plus proof that it works.
