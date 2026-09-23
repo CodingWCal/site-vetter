@@ -2,7 +2,7 @@
 // Note: Chrome closes the popup if you click away, which cancels the request. Keep it open.
 const API = "http://localhost:8787";
 const $ = (id) => document.getElementById(id);
-const ICON = { red_flag: "🚩", warning: "⚠️", reassuring: "✅" };
+const ICON = { red_flag: "↗", warning: "△", reassuring: "✓" };
 const VERDICT = { danger: "Dangerous", caution: "Be careful", safe: "Looks safe" };
 
 // Builds elements with textContent only. Never use innerHTML: page content is attacker-controlled.
@@ -15,7 +15,7 @@ function h(tag, attrs = {}, ...children) {
 
 function status(msg, isError = false) {
   $("status").textContent = msg;
-  $("status").className = isError ? "muted error" : "muted";
+  $("status").className = `status${isError ? " error" : msg ? " loading" : ""}`;
 }
 
 $("vet").addEventListener("click", async () => {
@@ -27,10 +27,12 @@ $("vet").addEventListener("click", async () => {
     if (!/^https?:/.test(tab?.url ?? "")) throw new Error("Open a website first. Browser pages like chrome:// can't be checked.");
 
     status("Reading the page…");
+    btn.querySelector("strong").textContent = "Reading page signals…";
     const [{ result: signals }] = await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ["content.js"] });
     const { text, ...rest } = signals;
 
     status("Checking domain age and asking Claude…");
+    btn.querySelector("strong").textContent = "Analysing trust signals…";
     const res = await fetch(`${API}/api/vet`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,40 +47,42 @@ $("vet").addEventListener("click", async () => {
     status(err.message, true);
   } finally {
     btn.disabled = false;
+    btn.querySelector("strong").textContent = "Run another safety check";
   }
 });
 
 function render(r, meta) {
-  $("verdict").className = `v-${r.verdict}`;
-  $("verdict").replaceChildren(
-    h("span", { class: "score" }, `${r.risk_score}/100`),
-    h("span", { class: "badge" }, VERDICT[r.verdict] ?? r.verdict),
-    h("div", { class: "headline" }, r.headline),
-  );
+  $("verdict").className = `verdict-card v-${r.verdict}`;
+  $("score").textContent = r.risk_score;
+  $("verdict-badge").textContent = VERDICT[r.verdict] ?? r.verdict;
+  $("headline").textContent = r.headline;
 
   const age = meta.domain_age;
   $("domain").textContent = age?.age_days != null
-    ? `${age.domain} registered ${new Date(age.created).toLocaleDateString()} (${age.age_days.toLocaleString()} days ago)`
-    : `${age?.domain ?? ""}: ${age?.note ?? "domain age unknown"}`;
+    ? `${age.domain} · registered ${new Date(age.created).toLocaleDateString()} · ${age.age_days.toLocaleString()} days old`
+    : `${age?.domain ?? ""} · ${age?.note ?? "domain age unknown"}`;
 
   $("injection").hidden = !r.prompt_injection_attempts.length;
   $("injection").replaceChildren(
-    h("strong", {}, "⚠ This page tried to trick AI safety tools. We ignored it:"),
+    h("strong", {}, "↗ This page tried to fool safety tools. We ignored it."),
     ...r.prompt_injection_attempts.map((s) => h("q", {}, s)),
   );
 
   $("reasons").replaceChildren(...r.reasons.map((x) =>
-    h("li", {}, `${ICON[x.impact] ?? "•"} `, h("span", { class: "label" }, x.label), h("div", { class: "muted" }, x.detail))));
+    h("li", {},
+      h("span", { class: `reason-icon ${x.impact}` }, ICON[x.impact] ?? "•"),
+      h("span", { class: "reason-content" }, h("span", { class: "reason-label" }, x.label), h("span", { class: "reason-detail" }, x.detail)),
+    )));
 
   $("tracking").replaceChildren(
-    h("strong", {}, `Tracking: ${r.tracking.level}. `), r.tracking.summary,
-    r.tracking.trackers.length ? h("div", { class: "muted" }, r.tracking.trackers.join(", ")) : "",
+    h("strong", {}, `Tracking · ${r.tracking.level}`), `  ${r.tracking.summary}`,
+    r.tracking.trackers.length ? h("span", { class: "tracker-list" }, r.tracking.trackers.join(" · ")) : "",
   );
 
   $("advice").replaceChildren(...r.advice.map((a) => h("li", {}, a)));
 
   const bits = [meta.model, `${(meta.ms / 1000).toFixed(1)}s`];
-  if (meta.redactions?.count) bits.push(`🔒 ${meta.redactions.count} secrets redacted before sending`);
+  if (meta.redactions?.count) bits.push(`🔒 ${meta.redactions.count} secrets redacted`);
   $("meta").textContent = bits.join(" · ");
   $("result").hidden = false;
 }
