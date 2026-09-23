@@ -13,7 +13,15 @@
   // Forms: what they ask for and where they send it
   const inputs = [...document.querySelectorAll("input")];
   const describe = (i) => `${i.type} ${i.name} ${i.id} ${i.placeholder} ${i.autocomplete}`;
-  const forms = [...document.forms].map((f) => hostOf(f.action || location.href));
+  const forms = [...document.forms].map((f) => {
+    const action = f.getAttribute("action") || location.href;
+    let target = "";
+    try {
+      const parsed = new URL(action, location.href);
+      target = /^https?:$/.test(parsed.protocol) ? parsed.hostname : parsed.protocol;
+    } catch { /* Ignore malformed actions; the browser will not submit them normally. */ }
+    return target;
+  });
   const passwordField = inputs.some((i) => i.type === "password");
 
   // Links whose visible text shows a domain different from where they go
@@ -32,6 +40,22 @@
       .map((el) => hostOf(el.src)).filter((h) => h && !sameSite(h)),
   )];
   const knownTrackers = thirdParty.filter((h) => TRACKERS.some((t) => h === t || h.endsWith("." + t)));
+
+  // A page can claim a familiar brand while running on an unrelated host.
+  const identityText = [
+    document.title,
+    ...[...document.querySelectorAll("h1, h2, h3, [role='banner'], img[alt], [aria-label]")]
+      .map((el) => el.getAttribute("alt") || el.getAttribute("aria-label") || el.textContent),
+  ].join(" ");
+  const brandWords = identityText
+    .match(/\b(?:paypal|microsoft|apple|amazon|google|facebook|instagram|netflix|chase|wells\s+fargo|bank)\b/gi) ?? [];
+  const claimedBrands = [...new Set(brandWords.map((brand) => brand.toLowerCase().replace(/\s+/g, " ")))];
+  // Compare each brand against the registrable label only. "bankofamerica.com" legitimately
+  // contains "bank", while in "paypal.com.evil.co" the real site is "evil" and "paypal" is bait.
+  const labels = host.split(".");
+  const SECOND_LEVEL = new Set(["co", "com", "org", "net", "ac", "gov", "edu"]);
+  const core = (SECOND_LEVEL.has(labels.at(-2)) ? labels.at(-3) : labels.at(-2)) ?? host;
+  const brandHostMismatch = claimedBrands.filter((b) => !core.includes(b.replace(/\s+/g, "")));
 
   // Text a person can't see but an AI would read: where prompt injections hide
   const hidden = [];
@@ -58,10 +82,12 @@
       password_field: passwordField,
       payment_field: inputs.some((i) => /cc-|card|cvv|cvc|expir/i.test(describe(i))),
       sensitive_id_field: inputs.some((i) => /ssn|social.?security|routing|account.?num/i.test(describe(i))),
-      submits_offsite_to: [...new Set(forms.filter((h) => h && !sameSite(h)))],
+      // A hostname never ends in ":", a bare protocol (javascript:, mailto:) always does.
+      submits_offsite_to: [...new Set(forms.filter((h) => h && (h.endsWith(":") || !sameSite(h))))],
       password_over_http: passwordField && location.protocol !== "https:",
     },
     links: { total: links.length, external: links.filter((a) => !sameSite(hostOf(a.href))).length, mismatched },
+    brand: { claimed: claimedBrands.slice(0, 5), host_mismatch: brandHostMismatch.slice(0, 5) },
     third_party: { hosts: thirdParty.slice(0, 30), known_trackers: knownTrackers },
     hidden_text: hidden,
     text: fullText.slice(0, 15000),
