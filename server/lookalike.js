@@ -1,6 +1,7 @@
 // OWNER: Lane 7 (Threat checks). Flags lookalike / brand-impersonation domains,
 // e.g. "paypa1.com", "amaz0n-support.net", "chase.com.secure-login.io".
-// server.js passes the result to Claude inside <facts> as `lookalike`.
+// server.js passes the result to Claude inside <facts> as `lookalike`:
+//   { findings: [...], decision: { level, score, summary }, pending_checks: [...] }
 // Keep it pure and fast: no network calls, no new dependencies.
 
 // Commonly phished brands. `key` is matched against domain labels; `official` are the brand's real
@@ -92,7 +93,7 @@ function typoOf(label, key) {
   return label.split("-").some((t) => t !== key && editDistance(t, key) === 1);
 }
 
-export function lookalikeChecks(host, title = "") {
+function findLookalikes(host, title = "") {
   const findings = [];
   host = String(host || "").toLowerCase().replace(/\.$/, "").replace(/^www\./, "");
   // Local dev, bare hostnames and raw IPs have no brand to impersonate (IP forms are Lane 3's signal).
@@ -106,10 +107,10 @@ export function lookalikeChecks(host, title = "") {
   }
 
   const seen = new Set();
-  const add = (brand, kind, detail) => {
+  const add = (brand, kind, detail, method) => {
     if (seen.has(brand.key + kind)) return;
     seen.add(brand.key + kind);
-    findings.push({ kind, brand: brand.names[0], detail });
+    findings.push({ kind, ...(method && { method }), brand: brand.names[0], ...(kind === "lookalike" && bait.length && { bait }), detail });
   };
 
   const sldClean = unconfuse(sld);
@@ -122,13 +123,13 @@ export function lookalikeChecks(host, title = "") {
 
     // 1. Brand spelled with swapped characters: paypa1.com, amaz0n-support.net
     if (sldClean !== sld && labelHasBrand(sldClean, brand.key) && !labelHasBrand(sld, brand.key)) {
-      add(brand, "lookalike", `"${registrable}" imitates ${label} by swapping look-alike characters. The real site is ${brand.official[0]}.${baitNote}`);
+      add(brand, "lookalike", `"${registrable}" imitates ${label} by swapping look-alike characters. The real site is ${brand.official[0]}.${baitNote}`, "char_swap");
     // 2. Brand plus extra words on someone else's domain: paypal-secure-login.com
     } else if (labelHasBrand(sld, brand.key)) {
-      add(brand, "lookalike", `"${registrable}" contains the name ${label} but is not an official ${label} domain (${brand.official[0]}).${baitNote}`);
+      add(brand, "lookalike", `"${registrable}" contains the name ${label} but is not an official ${label} domain (${brand.official[0]}).${baitNote}`, "brand_in_domain");
     // 3. One-letter typo: amazom.com, gooogle.com, paypla.com
     } else if (typoOf(sldClean, brand.key)) {
-      add(brand, "lookalike", `"${registrable}" is one letter off from ${label}'s real domain ${brand.official[0]}.`);
+      add(brand, "lookalike", `"${registrable}" is one letter off from ${label}'s real domain ${brand.official[0]}.`, "typo");
     }
 
     // 4. Brand buried in a subdomain of an unrelated domain: chase.com.verify-login.io
@@ -142,4 +143,39 @@ export function lookalikeChecks(host, title = "") {
     }
   }
   return findings;
+}
+
+// How much each finding counts toward the risk score (0-100). Character swaps and brands hidden in a
+// subdomain almost never happen on a legitimate site, so either one alone reaches "danger".
+const WEIGHTS = { char_swap: 65, brand_in_subdomain: 65, typo: 50, brand_in_domain: 35, brand_mismatch: 35, punycode: 30 };
+const BAIT_BONUS = 25; // brand + "login"/"verify"/"secure" in the same domain
+
+// Local, rule-based decision so there's an answer even in mock mode. Domain checks only: "clear" means
+// no impersonation was found, not that the page is safe. Claude weighs this with every other signal.
+export function decide(findings) {
+  let score = findings.reduce((sum, f) => sum + (WEIGHTS[f.method ?? f.kind] ?? 20), 0);
+  if (findings.some((f) => f.bait)) score += BAIT_BONUS;
+  score = Math.min(100, score);
+  const brands = [...new Set(findings.map((f) => f.brand).filter(Boolean))];
+  const level = score >= 60 ? "danger" : score >= 25 ? "caution" : "clear";
+  const summary = level === "clear"
+    ? "No brand impersonation found in the domain or title."
+    : `The domain looks like it is impersonating ${brands.join(", ") || "a known brand"}.` +
+      (level === "danger" ? " Do not enter passwords or payment details." : " Check the address carefully.");
+  return { level, score, summary };
+}
+
+// Reputation services we plan to query. Not wired up yet (the MVP makes no network calls from this lane);
+// listed so the report can say what wasn't checked.
+export const PENDING_CHECKS = [
+  { name: "Google Safe Browsing", checks: "known phishing and malware URLs", status: "pending" },
+  { name: "VirusTotal", checks: "URL reputation from 70+ security vendors", status: "pending" },
+  { name: "PhishTank", checks: "community-reported phishing URLs", status: "pending" },
+  { name: "URLhaus (abuse.ch)", checks: "URLs distributing malware", status: "pending" },
+  { name: "urlscan.io", checks: "screenshots and behavior of the live page", status: "pending" },
+];
+
+export function lookalikeChecks(host, title = "") {
+  const findings = findLookalikes(host, title);
+  return { findings, decision: decide(findings), pending_checks: PENDING_CHECKS };
 }
